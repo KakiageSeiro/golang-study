@@ -151,12 +151,17 @@ func Test_fizzBuzzHandler(t *testing.T) {
 	defer ts.Close()
 
 	type fizzbuzz struct {
+		//json形式のkey。"value"というキー名
+		//右側にこのように記述するとjsonパッケージで変換する際にキー名として利用してくれる
+		//jsonだけではなくバリデーションなどにも利用できるみたい。アノテーションのノリ？
 		Value string `json:"value"`
 	}
 
 	type args struct {
 		n int
 	}
+
+	//構造体定義＆初期化の書き方
 	tests := []struct {
 		name string
 		args args
@@ -205,8 +210,10 @@ func Test_fizzBuzzHandler(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			//リクエスト用のクエリ組み立て
 			values := url.Values{}
 			values.Add("n", fmt.Sprint(tt.args.n))
+			//リクエスト実行
 			res, err := http.Get(ts.URL + "?" + values.Encode())
 			if err != nil {
 				t.Error("unexpected")
@@ -218,16 +225,19 @@ func Test_fizzBuzzHandler(t *testing.T) {
 			//    t.Fatal(err)
 			//}
 
+			//レスポンスのbody部をバイト配列で取得
 			b, err := ioutil.ReadAll(res.Body)
 			if err != nil {
 				t.Error(err)
 			}
 
+			//バイト配列から構造体fizzbuzz形式ポインタにデコード
 			var bb fizzbuzz
 			if err := json.Unmarshal(b, &bb); err != nil {
 				t.Fatal(err)
 			}
 
+			//アサーション（DeepEqualはJavaのStringのEqualと同じことをしている）
 			if !reflect.DeepEqual(bb, tt.want) {
 				t.Errorf("Response body error. body = %v", bb)
 			}
