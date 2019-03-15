@@ -151,7 +151,7 @@ func Test_fizzBuzzHandler(t *testing.T) {
 	defer ts.Close()
 
 	type fizzbuzz struct {
-		Value string
+		Value string `json:"value"`
 	}
 
 	type args struct {
