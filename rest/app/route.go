@@ -8,6 +8,7 @@ import (
 	"github.com/shinofara/golang-study/rest/app/middleware"
 	"github.com/shinofara/golang-study/rest/infrastructure"
 	"github.com/shinofara/golang-study/rest/app/controller"
+	//"./controller"
 )
 
 // NewMux create the handler.
@@ -25,13 +26,14 @@ func NewMux() http.Handler {
 	base := controller.Base{
 		DB: db,
 	}
+
 	transaction := controller.TransactionController{Base: base}
 	index := controller.Index{Base: base}
 	r.HandleFunc("/", index.Index).Methods(http.MethodGet)
 	r.HandleFunc("/transactions", transaction.List).Methods(http.MethodGet)
 	r.HandleFunc("/transactions/{id:[0-9]+}", transaction.Show).Methods(http.MethodGet)
 	r.HandleFunc("/transactions", transaction.Create).Methods(http.MethodPost)
-	r.HandleFunc("/transactions/{id:[0-9]+}", transaction.Delete).Methods(http.MethodDelete)
+	r.HandleFunc("/transactions/delete/{id:[0-9]+}", transaction.Delete).Methods(http.MethodDelete)
 
 	return r
 }

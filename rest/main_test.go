@@ -26,10 +26,38 @@ type Transaction struct {
 }
 
 func TestCreate(t *testing.T) {
+	//ユーザーごとの値段上限
 	limitMap := make(map[int]int, userNum)
 	for uID := 1; uID <= userNum; uID++ {
 		limitMap[uID] = uID * 1000
 	}
+
+	////テスト実行前にユーザーの取引を削除
+	////buffer := bytes.NewBuffer(make([]byte, 0, 128))
+	//for i := 0; i < 3; i++{
+	//	//削除リクエスト作成
+	//	req2, err := http.NewRequest(
+	//		http.MethodDelete,
+	//		baseURL+"/transactions/delete" + "/?id=" + strconv.Itoa(i + 1),
+	//		nil,
+	//	)
+	//	if err != nil {
+	//		t.Fatal(err)
+	//	}
+	//
+	//	//パラメータ作成
+	//	values := url.Values{} //url.Valuesオブジェクト生成
+	//	values.Add("id", strconv.Itoa(i + 1)) //key-valueを追加
+	//	//リクエストに付加
+	//	req2.URL.RawQuery = values.Encode()
+	//
+	//	//結果確認
+	//	resp2, err := http.DefaultClient.Do(req2)
+	//	if err != nil {
+	//		t.Fatal(err)
+	//	}
+	//	fmt.Println("削除処理" + strconv.Itoa(resp2.StatusCode))
+	//}
 
 	// Create transactions
 	var wg sync.WaitGroup
@@ -107,8 +135,55 @@ func TestCreate(t *testing.T) {
 			t.Fatal(err)
 		}
 		limit := limitMap[uID]
+		//値段制限を超えてしまった場合テストエラー
 		if amount > limit {
-			t.Errorf("amount %d over the limit %d", amount, limit)
+			t.Errorf("User %d amount %d over the limit %d", uID, amount, limit)
 		}
 	}
+
+	//func () recordDelete(uId string){
+	//
+	//	r := mux.NewRouter()
+	//
+	//	db, err := infrastructure.NewDB()
+	//	if err != nil {
+	//		log.Panic(err)
+	//	}
+	//
+	//	r.Use(middleware.Authenticate(db))
+	//	r.Use(middleware.RequestLogger)
+	//
+	//	base := controller.Base{
+	//		DB: db,
+	//	}
+	//
+	//	//トランザクション作成
+	//	transaction := controller.TransactionController{Base: base}
+	//	ctx := r.Context()
+	//	//id := mux.Vars(r)["id"]
+	//	//uID := r.Context().Value(middleware.UserIDKey).(int)
+	//	result, err := transaction.DB.Open().ExecContext(
+	//		ctx,
+	//		//"delete from transactions where id=? and user_id=?",
+	//		"delete from transactions where user_id=?",
+	//		uID,
+	//	)
+	//	if err != nil {
+	//		http.Error(w, err.Error(), http.StatusInternalServerError)
+	//		return
+	//	}
+	//
+	//	affected, err := result.RowsAffected()
+	//	if err != nil {
+	//		http.Error(w, err.Error(), http.StatusInternalServerError)
+	//		return
+	//	}
+	//	if affected == 0 {
+	//		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	//		return
+	//	}
+	//
+	//
+	//
+	//}
 }
